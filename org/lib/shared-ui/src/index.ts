@@ -1,3 +1,1 @@
-export * from './components/Header';
-export * from './components/Sidebar';
-export * from './components/Footer';
+export * from "./lib/shared-ui";
