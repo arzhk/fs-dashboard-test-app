@@ -7,13 +7,20 @@ import { dashboardRoutes } from "./routes/dashboardRoutes";
 import { errorHandler } from "./middleware/errorHandler";
 import * as dotenv from "dotenv";
 import { resolve } from "path";
+import cookieParser from "cookie-parser";
 
 dotenv.config({ path: resolve(__dirname, "../../../.env") });
 
 const app = express();
 
-app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: ["http://localhost:4200", "http://localhost:4201"],
+    credentials: true,
+  })
+);
 
 connectDatabase()
   .then(() => console.log("Database initialized"))
@@ -29,6 +36,9 @@ const server = app.listen(port, () => {
   console.log(`Listening at http://localhost:${port}/api`);
 });
 
+server.on("request", (req) => {
+  console.log(`api request: ${req.method} ${req.url} ${req.headers.authorization}`);
+});
 server.on("error", console.error);
 
 process.on("SIGTERM", () => {

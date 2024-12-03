@@ -37,7 +37,7 @@ export const errorHandler = (
 
   if (err instanceof APIError) {
     return res.status(err.statusCode).json({
-      status: 'error',
+      success:false,
       message: err.message,
       details: err.details || undefined,
     });
@@ -46,14 +46,14 @@ export const errorHandler = (
   const errorType = errorTypes[err.name];
   if (errorType) {
     return res.status(errorType.status).json({
-      status: 'error',
+        success:false,
       message: errorType.message,
       details: err.message,
     });
   }
 
   return res.status(500).json({
-    status: 'error',
+    success:false,
     message: process.env.NODE_ENV === 'production'
       ? 'Internal Server Error'
       : err.message,
