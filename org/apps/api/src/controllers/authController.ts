@@ -52,7 +52,11 @@ export const authController = {
 
       delete user.password;
 
-      res.status(200).json({ success: true, message: "Logged in successfully", user: user });
+      res.status(200).json({
+        success: true,
+        message: "Logged in successfully",
+        user,
+      });
     } catch (error) {
       next(error);
     }
@@ -70,7 +74,7 @@ export const authController = {
         success: true,
         message: "Token is valid",
         user: {
-          id: user._id,
+          _id: user._id,
           email: user.email,
           name: user.name,
           role: user.role,

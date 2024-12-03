@@ -3,8 +3,21 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const authToken = request.cookies.get("auth_token");
+  const { pathname } = request.nextUrl;
 
-  if (!authToken) {
+  if (pathname === "/") {
+    return NextResponse.redirect(
+      new URL(authToken ? "/dashboard" : "/login", request.url)
+    );
+  }
+
+  const authPages = ["/login", "/register"];
+
+  if (authToken && authPages.includes(pathname)) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  if (!authToken && pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
@@ -12,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard"],
+  matcher: ["/", "/dashboard", "/login", "/register"],
 };

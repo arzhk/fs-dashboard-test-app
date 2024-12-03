@@ -1,14 +1,15 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { Card } from "@org/shared-ui";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, TooltipProps } from "recharts";
 import PeopleIcon from "@mui/icons-material/People";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import { Grid2 as Grid, Typography, Box, IconButton, CircularProgress } from "@mui/material";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import UserTable from "./UserTable";
 
 interface DashboardData {
   stats: {
@@ -25,8 +26,33 @@ interface DashboardData {
   };
 }
 
+const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
+  if (active && payload && payload.length) {
+    return (
+      <Box
+        sx={{
+          backgroundColor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+          p: 1,
+          px: 2,
+          minWidth: 100,
+          borderRadius: 1,
+          boxShadow: 1,
+        }}
+      >
+        <Typography variant="body2">{label}</Typography>
+        <Typography variant="body2" color="primary">
+          ${payload[0].value?.toLocaleString()}
+        </Typography>
+      </Box>
+    );
+  }
+  return null;
+};
+
 function DashboardPage() {
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError } = useQuery<DashboardData>({
     queryKey: ["dashboardData"],
     queryFn: async () => {
       const { data } = await api.get("/dashboard/stats", { withCredentials: true });
@@ -176,11 +202,11 @@ function DashboardPage() {
                 Revenue Overview
               </Typography>
               <LineChart width={600} height={200} data={data?.revenueChart}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#1976d2" />
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                <XAxis dataKey="name" stroke="rgba(255,255,255,0.15)" tick={{ fill: "#fff" }} />
+                <YAxis stroke="rgba(255,255,255,0.15)" tick={{ fill: "#fff" }} />
+                <Tooltip content={<CustomTooltip />} />
+                <Line type="monotone" dataKey="value" stroke="#1976d2" dot={{ fill: "#1976d2" }} />
               </LineChart>
             </Box>
           </Card>
@@ -227,6 +253,7 @@ function DashboardPage() {
             </Box>
           </Card>
         </Grid>
+        <UserTable />
       </Grid>
     </Box>
   );

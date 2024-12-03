@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography, Box } from "@mui/material";
 import { Card } from "@org/shared-ui";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -52,18 +52,72 @@ export default function RegisterPage() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-[444px]">
-        <div className="p-8 flex flex-col items-center">
-          <Typography component="h1" variant="h5" className="mb-6">
+    <Box
+      component="main"
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2,
+        bgcolor: "background.default",
+      }}
+    >
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: "444px",
+          p: 0,
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            bgcolor: "background.paper",
+          }}
+        >
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{
+              mb: 4,
+              color: "text.primary",
+              fontWeight: "bold",
+            }}
+          >
             Admin Registration
           </Typography>
+
           {registerError && (
-            <Typography color="error" className="mb-4">
+            <Typography
+              color="error"
+              sx={{
+                mb: 3,
+                bgcolor: "error.main",
+                color: "error.contrastText",
+                py: 1,
+                px: 2,
+                borderRadius: 1,
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
               {registerError}
             </Typography>
           )}
-          <form onSubmit={handleSubmit(onSubmit)} className="mt-4 w-full">
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            sx={{
+              width: "100%",
+              mt: 1,
+            }}
+          >
             <TextField
               margin="normal"
               fullWidth
@@ -71,10 +125,22 @@ export default function RegisterPage() {
               label="Full Name"
               error={!!errors.name}
               helperText={errors.name?.message}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: -0.5,
+                },
+              }}
               {...register("name", {
                 required: "Name is required",
               })}
             />
+
             <TextField
               margin="normal"
               fullWidth
@@ -82,6 +148,18 @@ export default function RegisterPage() {
               label="Email Address"
               error={!!errors.email}
               helperText={errors.email?.message}
+              sx={{
+                mt: 1,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: -0.5,
+                },
+              }}
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -90,6 +168,7 @@ export default function RegisterPage() {
                 },
               })}
             />
+
             <TextField
               margin="normal"
               fullWidth
@@ -97,6 +176,18 @@ export default function RegisterPage() {
               type="password"
               error={!!errors.password}
               helperText={errors.password?.message}
+              sx={{
+                mt: 1,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: -0.5,
+                },
+              }}
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -105,6 +196,7 @@ export default function RegisterPage() {
                 },
               })}
             />
+
             <TextField
               margin="normal"
               fullWidth
@@ -112,17 +204,53 @@ export default function RegisterPage() {
               type="password"
               error={!!errors.confirmPassword}
               helperText={errors.confirmPassword?.message}
+              sx={{
+                mt: 1,
+                mb: 4,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: 0,
+                },
+              }}
               {...register("confirmPassword", {
                 required: "Please confirm your password",
                 validate: (value) => value === password || "The passwords do not match",
               })}
             />
-            <Button type="submit" fullWidth variant="contained" className="mt-6 mb-4" disabled={isLoading}>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={isLoading}
+              sx={{
+                mt: 1,
+                py: 1.5,
+                fontSize: "1rem",
+                fontWeight: 600,
+                bgcolor: "primary.main",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                  transform: "translateY(-1px)",
+                  boxShadow: (theme) => `0 4px 12px ${theme.palette.primary.dark}40`,
+                },
+                "&:disabled": {
+                  bgcolor: "primary.dark",
+                  opacity: 0.6,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
               {isLoading ? "Registering..." : "Register"}
             </Button>
-          </form>
-        </div>
+          </Box>
+        </Box>
       </Card>
-    </main>
+    </Box>
   );
 }

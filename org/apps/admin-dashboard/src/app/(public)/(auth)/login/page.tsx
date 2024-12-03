@@ -1,13 +1,13 @@
 "use client";
 import React, { useState } from "react";
-import { Button, TextField, Typography } from "@mui/material";
+import { Button, TextField, Typography, Box } from "@mui/material";
 import { Card } from "@org/shared-ui";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { authApi } from "../../../../lib/api/auth";
 import { AxiosError } from "axios";
 import { APIErrorResponse } from "../../../../lib/axios";
-import { useAuthStore } from "apps/admin-dashboard/src/lib/hooks/useAuthStore";
+import { useAuthStore } from "../../../../lib/hooks/useAuthStore";
 
 interface LoginFormInputs {
   email: string;
@@ -25,18 +25,15 @@ export default function LoginPage() {
   } = useForm<LoginFormInputs>();
 
   const onSubmit = handleSubmit(async (data: LoginFormInputs) => {
-    console.log("Submitting data:", data); // Check if this runs
     setIsLoading(true);
     try {
       const response = await authApi.login(data);
-      console.log("Response:", response); // Log server response
       if (response.success) {
         const { setUser } = useAuthStore.getState();
         setUser(response.user);
         router.push("/dashboard");
       }
     } catch (error) {
-      console.error("Error during login:", error); // Log any errors
       if (error instanceof AxiosError) {
         const errorData = error.response?.data as APIErrorResponse;
         setLoginError(errorData?.message || "Authentication failed");
@@ -49,18 +46,72 @@ export default function LoginPage() {
   });
 
   return (
-    <main className="min-h-screen flex items-center justify-center px-4">
-      <Card className="w-full max-w-[444px]">
-        <div className="p-8 flex flex-col items-center">
-          <Typography component="h1" variant="h5" className="mb-6">
+    <Box
+      component="main"
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        px: 2,
+        bgcolor: "background.default",
+      }}
+    >
+      <Card
+        sx={{
+          width: "100%",
+          maxWidth: "444px",
+          p: 0,
+          overflow: "hidden",
+        }}
+      >
+        <Box
+          sx={{
+            p: 4,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            bgcolor: "background.paper",
+          }}
+        >
+          <Typography
+            component="h1"
+            variant="h4"
+            sx={{
+              mb: 4,
+              color: "text.primary",
+              fontWeight: "bold",
+            }}
+          >
             Admin Login
           </Typography>
+
           {loginError && (
-            <Typography color="error" className="mb-4">
+            <Typography
+              color="error"
+              sx={{
+                mb: 3,
+                bgcolor: "error.main",
+                color: "error.contrastText",
+                py: 1,
+                px: 2,
+                borderRadius: 1,
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
               {loginError}
             </Typography>
           )}
-          <form onSubmit={onSubmit} className="mt-4 w-full">
+
+          <Box
+            component="form"
+            onSubmit={onSubmit}
+            sx={{
+              width: "100%",
+              mt: 1,
+            }}
+          >
             <TextField
               margin="normal"
               fullWidth
@@ -68,6 +119,17 @@ export default function LoginPage() {
               label="Email Address"
               error={!!errors.email}
               helperText={errors.email?.message}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: -0.5,
+                },
+              }}
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -76,6 +138,7 @@ export default function LoginPage() {
                 },
               })}
             />
+
             <TextField
               margin="normal"
               fullWidth
@@ -83,6 +146,19 @@ export default function LoginPage() {
               type="password"
               error={!!errors.password}
               helperText={errors.password?.message}
+              sx={{
+                mt: 1,
+                mb: 4,
+                "& .MuiOutlinedInput-root": {
+                  "&.Mui-focused fieldset": {
+                    borderColor: "primary.main",
+                  },
+                },
+                "& .MuiFormHelperText-root": {
+                  mt: 0.5,
+                  mb: 0,
+                },
+              }}
               {...register("password", {
                 required: "Password is required",
                 minLength: {
@@ -91,12 +167,35 @@ export default function LoginPage() {
                 },
               })}
             />
-            <Button type="submit" fullWidth variant="contained" className="mt-6 mb-4" disabled={isLoading}>
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              disabled={isLoading}
+              sx={{
+                mt: 1,
+                py: 1.5,
+                fontSize: "1rem",
+                fontWeight: 600,
+                bgcolor: "primary.main",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                  transform: "translateY(-1px)",
+                  boxShadow: (theme) => `0 4px 12px ${theme.palette.primary.dark}40`,
+                },
+                "&:disabled": {
+                  bgcolor: "primary.dark",
+                  opacity: 0.6,
+                },
+                transition: "all 0.2s ease-in-out",
+              }}
+            >
               {isLoading ? "Signing in..." : "Sign In"}
             </Button>
-          </form>
-        </div>
+          </Box>
+        </Box>
       </Card>
-    </main>
+    </Box>
   );
 }

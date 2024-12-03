@@ -1,6 +1,5 @@
 import api from "../axios";
-import serverApi from "../axiosServer";
-import { User } from "../stores/authStore";
+import { User } from "../hooks/useAuthStore";
 
 interface LoginCredentials {
   email: string;

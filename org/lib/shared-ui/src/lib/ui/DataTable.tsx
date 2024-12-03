@@ -11,17 +11,17 @@ import {
   Box,
   Typography,
   LinearProgress,
-} from '@mui/material';
-import { ReactNode } from 'react';
-import { useState } from 'react';
+} from "@mui/material";
+import { ReactNode } from "react";
+import { useState } from "react";
 
 export interface Column<T> {
   id: string;
   label: string;
-  minWidth?: number;
-  align?: 'right' | 'left' | 'center';
-  format?: (value: any) => ReactNode;
-  accessor: (row: T) => any;
+  width?: string;
+  align?: "right" | "left" | "center";
+  format?: (value: unknown) => ReactNode;
+  accessor: (row: T) => unknown;
 }
 
 interface DataTableProps<T> {
@@ -34,7 +34,7 @@ interface DataTableProps<T> {
   rowsPerPageOptions?: number[];
 }
 
-function DataTable<T>({
+export function DataTable<T>({
   columns,
   rows,
   loading = false,
@@ -55,9 +55,7 @@ function DataTable<T>({
     setPage(0);
   };
 
-  const displayedRows = pagination
-    ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-    : rows;
+  const displayedRows = pagination ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage) : rows;
 
   return (
     <Paper elevation={0}>
@@ -72,14 +70,21 @@ function DataTable<T>({
       {loading && <LinearProgress />}
 
       <TableContainer>
-        <Table stickyHeader>
+        <Table stickyHeader style={{ tableLayout: 'fixed' }}>
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              {columns.map((column, index) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{
+                    width: column.width,
+                    paddingLeft: index === 0 ? "24px" : undefined,
+                    paddingRight: index === columns.length - 1 ? "24px" : undefined,
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}
                 >
                   {column.label}
                 </TableCell>
@@ -87,13 +92,27 @@ function DataTable<T>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {displayedRows.map((row, index) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={index}>
-                {columns.map((column) => {
+            {displayedRows.map((row, rowIndex) => (
+              <TableRow hover role="checkbox" tabIndex={-1} key={rowIndex}>
+                {columns.map((column, colIndex) => {
                   const value = column.accessor(row);
                   return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format ? column.format(value) : value}
+                    <TableCell
+                      key={column.id}
+                      align={column.align}
+                      style={{
+                        paddingLeft: colIndex === 0 ? "24px" : undefined,
+                        paddingRight: colIndex === columns.length - 1 ? "24px" : undefined,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {column.format ? column.format(value) : (
+                        typeof value === 'string' || typeof value === 'number' ?
+                          value :
+                          String(value)
+                      )}
                     </TableCell>
                   );
                 })}
@@ -117,5 +136,3 @@ function DataTable<T>({
     </Paper>
   );
 }
-
-export default DataTable;

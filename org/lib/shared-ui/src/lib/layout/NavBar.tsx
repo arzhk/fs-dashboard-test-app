@@ -123,6 +123,7 @@ export const NavBar = ({ logo, links, actions }: NavBarProps) => {
         elevation={0}
         sx={{
           backgroundColor: theme.palette.background.paper,
+          border: "none",
           borderBottom: `1px solid ${theme.palette.divider}`,
           color: theme.palette.text.primary,
         }}

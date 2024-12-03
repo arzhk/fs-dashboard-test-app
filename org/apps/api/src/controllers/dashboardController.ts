@@ -1,4 +1,3 @@
-import { APIError } from "../middleware/errorHandler";
 import { Request, Response, NextFunction } from "express";
 
 export const getDashboardData = async (req: Request, res: Response, next: NextFunction) => {
